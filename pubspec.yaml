@@ -1,0 +1,52 @@
+name: growth_auth0
+description: Growth auth0 flutter plugin
+version: 1.0.0
+homepage:
+
+publish_to: none
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+  js: ^0.6.5
+  flutter_secure_storage: ^8.0.0
+
+  growth_web:
+    git:
+      url: https://github.com/growthpet/growth_web.git
+      ref: master
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+
+flutter:
+  assets:
+    #JS Assets
+    - assets/js/
+
+  plugin:
+    platforms:
+      android:
+        package: com.example.growth_auth0
+        pluginClass: GrowthAuth0Plugin
+      ios:
+        pluginClass: GrowthAuth0Plugin
+      linux:
+        pluginClass: GrowthAuth0Plugin
+      macos:
+        pluginClass: GrowthAuth0Plugin
+      windows:
+        pluginClass: GrowthAuth0PluginCApi
+      web:
+        pluginClass: GrowthAuth0Web
+        fileName: growth_auth0_web.dart
