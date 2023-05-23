@@ -19,6 +19,7 @@ dependencies:
   flutter_secure_storage: ^8.0.0
 
   growth_web:
+#    path: ../growth_web
     git:
       url: https://github.com/growthpet/growth_web.git
       ref: master
