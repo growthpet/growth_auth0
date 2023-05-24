@@ -134,16 +134,16 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.0.0"
+    version: "1.0.1"
   growth_web:
     dependency: transitive
     description:
       path: "."
-      ref: master
-      resolved-ref: e4d54a3b5fc4f08d59aa84f219d17f0dd4d33df8
+      ref: "1.0.0"
+      resolved-ref: "59416ee1aca40f4ac942608ba554d2344e82cdff"
       url: "https://github.com/growthpet/growth_web.git"
     source: git
-    version: "0.0.1"
+    version: "1.0.0"
   js:
     dependency: transitive
     description:
