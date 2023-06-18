@@ -1,6 +1,6 @@
 name: growth_auth0
 description: Growth auth0 flutter plugin
-version: 1.0.1
+version: 1.0.2
 homepage:
 
 publish_to: none
@@ -19,10 +19,9 @@ dependencies:
   flutter_secure_storage: ^8.0.0
 
   growth_web:
-#    path: ../growth_web
     git:
       url: https://github.com/growthpet/growth_web.git
-      ref: 1.0.0
+      ref: 1.0.1
 
 dev_dependencies:
   flutter_test:
