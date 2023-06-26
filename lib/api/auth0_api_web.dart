@@ -2,17 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:growth_auth0/api/auth0_api_platform_interface.dart';
 import 'package:growth_auth0/data/auth0_initial_data.dart';
 import 'package:growth_auth0/exceptions/auth0_init_exception.dart';
 import 'package:growth_web/growth_web.dart';
 
-import 'growth_auth0_platform_interface.dart';
-
 /// A web implementation of the GrowthAuth0Platform of the GrowthAuth0 plugin.
-class GrowthAuth0Web extends GrowthAuth0Platform {
-  /// Constructs a GrowthAuth0Web
-  GrowthAuth0Web();
-
+class Auth0Api extends Auth0ApiPlatformInterface {
   static const _tokensDataKey = 'tokens_data';
 
   final _methodChannel = WebMethodChannel();
@@ -24,7 +20,7 @@ class GrowthAuth0Web extends GrowthAuth0Platform {
   _TokensCache? _tokensCache;
 
   static void registerWith(_) {
-    GrowthAuth0Platform.instance = GrowthAuth0Web();
+    Auth0ApiPlatformInterface.instance = Auth0Api();
   }
 
   @override

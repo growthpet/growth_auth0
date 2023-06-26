@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:growth_auth0/api/auth0_api_platform_interface.dart';
 import 'package:growth_auth0/data/auth0_initial_data.dart';
 import 'package:growth_auth0/exceptions/auth0_init_exception.dart';
-import 'growth_auth0_platform_interface.dart';
 
 /// An implementation of [GrowthAuth0Platform] that uses method channels.
-class MethodChannelGrowthAuth0 extends GrowthAuth0Platform {
+class Auth0Api extends Auth0ApiPlatformInterface {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   final methodChannel = const MethodChannel('growth_auth0');
