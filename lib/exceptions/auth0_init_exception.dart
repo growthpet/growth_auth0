@@ -41,6 +41,11 @@ class Auth0CheckIsLoggedException extends Auth0Exception {
 }
 
 /// Исключение выхода
-class Auth0LogoutnException extends Auth0Exception {
-  Auth0LogoutnException([String? message]) : super(message);
+class Auth0LogoutException extends Auth0Exception {
+  Auth0LogoutException([String? message]) : super(message);
+}
+
+/// Исключение очистки токенов
+class Auth0ClearCredentialsException extends Auth0Exception {
+  Auth0ClearCredentialsException([String? message]) : super(message);
 }

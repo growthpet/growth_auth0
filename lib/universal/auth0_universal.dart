@@ -1,17 +1,16 @@
-import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:growth_auth0/data/auth0_initial_data.dart';
 import 'package:growth_auth0/exceptions/auth0_init_exception.dart';
+import 'package:growth_auth0/universal/auth0_universal_logged_data.dart';
+
+import 'client/client.dart';
 
 class Auth0Universal {
-  Auth0? _auth0;
-  Auth0InitialData? _data;
+  Auth0Client? _auth0;
 
-  @override
   Future<void> initAuth(Auth0InitialData data) async {
-    _data = data;
     try {
-      _auth0 = Auth0(data.domain, data.clientId);
+      _auth0 = Auth0Client(data);
     } on Object catch (e, s) {
       debugPrint(e.toString());
       debugPrintStack(stackTrace: s);
@@ -19,18 +18,27 @@ class Auth0Universal {
     }
   }
 
-  Future<void> login() async {
-    if (_data == null) {
-      return;
+  Future<Auth0UniversalLoggedData?> login() async {
+    try {
+      return await _auth0?.login();
+    } on Object catch (_) {
+      return null;
     }
+  }
 
-    final credentials = await _auth0?.webAuthentication(scheme: 'https').login(
-      audience: _data!.audience,
-      scopes: {_data!.scope},
-      // redirectUrl: 'http://auth.mvp.growth.pet/android/pet.growth/callback'
-      // redirectUrl: 'https://dev.growth.pet/android/pet.growth/callback'
-    );
-// Access token -> credentials.accessToken
-// User profile -> credentials.user
+  Future<bool> checkIsLogged() async {
+    return (await _auth0?.checkIsLogged()) ?? false;
+  }
+
+  Future<bool> logout() async {
+    return (await _auth0?.logout()) ?? false;
+  }
+
+  Future<String?> getAccessToken() async {
+    return _auth0?.getAccessToken();
+  }
+
+  Future<bool> clearCredentials() async {
+    return (await _auth0?.clearCredentials()) ?? true;
   }
 }

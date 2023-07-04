@@ -204,7 +204,7 @@ class Auth0Api extends Auth0ApiPlatformInterface {
     } on Object catch (e, s) {
       debugPrint(e.toString());
       debugPrintStack(stackTrace: s);
-      throw Auth0LogoutnException();
+      throw Auth0LogoutException();
     }
   }
 
