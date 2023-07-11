@@ -67,6 +67,15 @@ class Auth0Api extends Auth0ApiPlatformInterface {
   }
 
   @override
+  Future<bool> login(
+    String email,
+    String password,
+    String realmOrConnection,
+  ) {
+    return Future.value(false);
+  }
+
+  @override
   Future<bool> passwordLessWithEmail(String email) async {
     try {
       final result = await _methodChannel.invokeMethod(

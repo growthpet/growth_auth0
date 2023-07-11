@@ -11,17 +11,17 @@ public class GrowthAuth0Plugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch(call.method) {
             case "initAuth":
-                
-                debugPrint("Auth0Plugin initAuth")
                 handleInit(call: call, result: result)
                 
+        case  "login":
+                handleLogin(call: call, result: result)
+                break;
+            
         case  "passwordLessWithEmail":
-                debugPrint("Auth0Plugin passwordLessWithEmail")
                 handlePasswordLessWithEmail(call: call, result: result)
                 break;
             
             case "passwordLessWithSMS":
-                debugPrint("Auth0Plugin passwordLessWithSMS")
                 handlePasswordLessWithSMS(call: call, result: result)
                 
             case "loginWithEmail":
@@ -108,6 +108,41 @@ public class GrowthAuth0Plugin: NSObject, FlutterPlugin {
                 }
             )
             
+        } else {
+            result(getBaseError())
+        }
+    }
+    
+    private func handleLogin(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if let myArgs = call.arguments as? [String: Any],
+           let email =  myArgs["email"] as? String,
+           let password =  myArgs["password"] as? String,
+           let realmOrConnection =  myArgs["realmOrConnection"] as? String {
+            
+            var audience: String? = nil
+            var scope: String? = nil
+            
+            if(myArgs["audience"] is String?) {
+                audience = myArgs["audience"] as! String?
+            }
+            
+            if(myArgs["scope"] is String?) {
+                scope = myArgs["scope"] as! String?
+            }
+            
+            Auth.shared.login(
+                email: email,
+                password: password,
+                audience: audience,
+                scope: scope,
+                realmOrConnection: realmOrConnection,
+                onSuccess: {
+                    (isSuccess: Bool) in result(isSuccess)
+                },
+                onError: {
+                    (error: FlutterError) in result(error)
+                }
+            )
         } else {
             result(getBaseError())
         }

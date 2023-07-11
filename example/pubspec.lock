@@ -150,7 +150,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.0.3"
+    version: "1.0.4"
   growth_web:
     dependency: transitive
     description:

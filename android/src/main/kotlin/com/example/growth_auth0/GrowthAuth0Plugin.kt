@@ -38,6 +38,8 @@ class GrowthAuth0Plugin: FlutterPlugin, MethodCallHandler {
       Auth.initAuth(context, authClientId, authDomain)
       result.success(null)
 
+    } else if(call.method == "login") {
+      GlobalScope.launch { handleLogin(call, result) }
     } else if (call.method == "passwordLessWithEmail"){
       GlobalScope.launch { handlePasswordLessWithEmail(call, result) }
 
@@ -70,17 +72,33 @@ class GrowthAuth0Plugin: FlutterPlugin, MethodCallHandler {
     channel.setMethodCallHandler(null)
   }
 
+  private suspend fun handleLogin(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
+    val email = call.argument("email") ?: ""
+    val password = call.argument("password") ?: ""
+    val realmOrConnection = call.argument("realmOrConnection") ?: ""
+    val audience = call.argument("audience") ?: ""
+    val scope = call.argument("scope") ?: ""
+
+    try {
+      val isSuccess = Auth.loginAsync(email, password, realmOrConnection, audience, scope).await()
+      result.success(isSuccess)
+    } catch (e: AuthenticationException) {
+      result.error("Auth0Plugin AuthenticationException handle login", e.getDescription(), null)
+    } catch (e: Throwable) {
+      result.error("Auth0Plugin Error handle email", e.message, null)
+    }
+  }
+
   private suspend fun handlePasswordLessWithEmail(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
     val email = call.argument("email") ?: ""
 
     try {
       val isSuccess = Auth.passwordLessWithEmailAsync(email).await()
-      Log.d("Auth0Plugin", "success = $isSuccess email = $email")
       result.success(isSuccess)
     } catch (e: AuthenticationException) {
-      result.error("Auth0Plugin AuthenticationException handle email = $email", e.getDescription(), null)
+      result.error("Auth0Plugin AuthenticationException handle email code", e.getDescription(), null)
     } catch (e: Throwable) {
-      result.error("Auth0Plugin Error handle email = $email", e.message, null)
+      result.error("Auth0Plugin Error handle email code", e.message, null)
     }
   }
 
@@ -89,12 +107,11 @@ class GrowthAuth0Plugin: FlutterPlugin, MethodCallHandler {
 
     try {
       val isSuccess = Auth.passwordLessWithSMSAsync(phoneNumber).await()
-      Log.d("Auth0Plugin", "success = $isSuccess phone number = $phoneNumber")
       result.success(isSuccess)
     } catch (e: AuthenticationException) {
-      result.error("Auth0Plugin AuthenticationException handle phone number = $phoneNumber", e.getDescription(), null)
+      result.error("Auth0Plugin AuthenticationException handle phone number", e.getDescription(), null)
     } catch (e: Throwable) {
-      result.error("Auth0Plugin Error handle phone number = $phoneNumber", e.message, null)
+      result.error("Auth0Plugin Error handle phone number", e.message, null)
     }
 
   }
@@ -107,10 +124,9 @@ class GrowthAuth0Plugin: FlutterPlugin, MethodCallHandler {
 
     try {
       val isSuccess: Boolean = Auth.loginWithEmailAsync(email, code, audience, scope).await()
-      Log.d("Auth0Plugin", "success email = $email; audience = $audience; scope = $scope")
       result.success(isSuccess)
     } catch (e: Throwable) {
-      result.error("Auth0Plugin Error handle code email = $email", e.message, null)
+      result.error("Auth0Plugin Error handle code", e.message, null)
     }
 
   }
@@ -123,17 +139,15 @@ class GrowthAuth0Plugin: FlutterPlugin, MethodCallHandler {
 
     try {
       val isSuccess: Boolean = Auth.loginWithPhoneNumberAsync(phoneNumber, code, audience, scope).await()
-      Log.d("Auth0Plugin", "success code number = $phoneNumber; audience = $audience; scope= $scope")
       result.success(isSuccess)
     } catch (e: Throwable) {
-      result.error("Auth0Plugin Error handle code phone number = $phoneNumber", e.message, null)
+      result.error("Auth0Plugin Error handle code phone", e.message, null)
     }
 
   }
   private suspend fun handleGetToken(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
     try {
       val accessToken: String = Auth.getAccessTokenAsync().await()
-      Log.d("Auth0Plugin", "success get accessToken")
       result.success(accessToken)
     } catch (e: Throwable) {
       result.error("Auth0Plugin Error handle get accessToken", e.message, null)

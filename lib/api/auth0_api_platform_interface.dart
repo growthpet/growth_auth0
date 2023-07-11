@@ -26,6 +26,12 @@ abstract class Auth0ApiPlatformInterface extends PlatformInterface {
 
   Future<void> initAuth(Auth0InitialData data);
 
+  Future<bool> login(
+    String email,
+    String password,
+    String realmOrConnection,
+  );
+
   Future<bool> passwordLessWithEmail(String email);
 
   Future<bool> passwordLessWithSMS(String phoneNumber);

@@ -27,69 +27,25 @@ object Auth {
         manager = SecureCredentialsManager(context, authentication, SharedPreferencesStorage(context))
 
         val netClient = DefaultClient(
-            connectTimeout = 30,
-            readTimeout = 30,
-            enableLogging = true
+                connectTimeout = 30,
+                readTimeout = 30,
+                enableLogging = true
         )
 
         auth0.networkingClient = netClient
     }
 
-    fun passwordLessWithEmailAsync(email: String): Deferred<Boolean> {
+    fun loginAsync(email: String, password: String, realmOrConnection: String, audience: String?,
+                   scope: String?): Deferred<Boolean> {
         val deferred = CompletableDeferred<Boolean>()
 
-        Log.d("Auth0Plugin", "passwordLessWithEmailAsync email = $email")
+        Log.d("Auth0Plugin", "loginAsync")
 
-        authentication.passwordlessWithEmail(email, PasswordlessType.CODE)
-            .start(object : Callback<Void?, AuthenticationException> {
-                override fun onSuccess(result: Void?) {
-                    Log.d("Auth0Plugin", "passwordLessWithSMSAsync success email = $email")
-                    deferred.complete(true);
-                }
 
-                override fun onFailure(error: AuthenticationException) {
-                    Log.e("Auth0Plugin", "passwordLessWithSMSAsync error = ${error.message} email = $email")
-                    deferred.completeExceptionally(error)
-                }
-            })
+        val request: AuthenticationRequest = authentication
+                .login(email, password, realmOrConnection)
 
-        return deferred
-    }
-
-    fun passwordLessWithSMSAsync(phoneNumber: String): Deferred<Boolean> {
-        val deferred = CompletableDeferred<Boolean>()
-
-        Log.d("Auth0Plugin", "passwordLessWithSMSAsync phoneNumber = $phoneNumber")
-
-        authentication.passwordlessWithSMS(phoneNumber, PasswordlessType.CODE)
-            .start(object : Callback<Void?, AuthenticationException> {
-                override fun onSuccess(result: Void?) {
-                    Log.d("Auth0Plugin", "passwordLessWithSMSAsync success phoneNumber = $phoneNumber")
-                    deferred.complete(true);
-                }
-
-                override fun onFailure(error: AuthenticationException) {
-                    Log.e("Auth0Plugin", "passwordLessWithSMSAsync error = ${error.message} phoneNumber = $phoneNumber")
-                    deferred.completeExceptionally(error)
-                }
-            })
-
-        return deferred
-    }
-
-    fun loginWithEmailAsync(
-        email: String,
-        code: String,
-        audience: String?,
-        scope: String?
-    ): Deferred<Boolean> {
-        val deferred = CompletableDeferred<Boolean>();
-
-        Log.d("Auth0Plugin", "loginWithEmailAsync email = $email")
-
-        val request: AuthenticationRequest = authentication.loginWithEmail(email, code)
-
-        if(audience != null) {
+        if (audience != null) {
             request.setAudience(audience)
         }
 
@@ -99,13 +55,93 @@ object Auth {
 
         request.start(object : Callback<Credentials, AuthenticationException> {
             override fun onSuccess(credentials: Credentials) {
-                Log.d("Auth0Plugin", "loginWithEmailAsync email = $email")
+                Log.d("Auth0Plugin", "loginAsync success")
+
+                manager.saveCredentials(credentials)
+
+                deferred.complete(true);
+            }
+
+            override fun onFailure(error: AuthenticationException) {
+                Log.e("Auth0Plugin", "loginAsync error = ${error.message}")
+                deferred.completeExceptionally(error)
+            }
+        })
+
+        return deferred
+    }
+
+    fun passwordLessWithEmailAsync(email: String): Deferred<Boolean> {
+        val deferred = CompletableDeferred<Boolean>()
+
+        Log.d("Auth0Plugin", "passwordLessWithEmailAsync")
+
+        authentication.passwordlessWithEmail(email, PasswordlessType.CODE)
+                .start(object : Callback<Void?, AuthenticationException> {
+                    override fun onSuccess(result: Void?) {
+                        Log.d("Auth0Plugin", "passwordLessWithSMSAsync success")
+                        deferred.complete(true);
+                    }
+
+                    override fun onFailure(error: AuthenticationException) {
+                        Log.e("Auth0Plugin", "passwordLessWithSMSAsync error = ${error.message}")
+                        deferred.completeExceptionally(error)
+                    }
+                })
+
+        return deferred
+    }
+
+    fun passwordLessWithSMSAsync(phoneNumber: String): Deferred<Boolean> {
+        val deferred = CompletableDeferred<Boolean>()
+
+        Log.d("Auth0Plugin", "passwordLessWithSMSAsync")
+
+        authentication.passwordlessWithSMS(phoneNumber, PasswordlessType.CODE)
+                .start(object : Callback<Void?, AuthenticationException> {
+                    override fun onSuccess(result: Void?) {
+                        Log.d("Auth0Plugin", "passwordLessWithSMSAsync success")
+                        deferred.complete(true);
+                    }
+
+                    override fun onFailure(error: AuthenticationException) {
+                        Log.e("Auth0Plugin", "passwordLessWithSMSAsync error = ${error.message}")
+                        deferred.completeExceptionally(error)
+                    }
+                })
+
+        return deferred
+    }
+
+    fun loginWithEmailAsync(
+            email: String,
+            code: String,
+            audience: String?,
+            scope: String?
+    ): Deferred<Boolean> {
+        val deferred = CompletableDeferred<Boolean>();
+
+        Log.d("Auth0Plugin", "loginWithEmailAsync")
+
+        val request: AuthenticationRequest = authentication.loginWithEmail(email, code)
+
+        if (audience != null) {
+            request.setAudience(audience)
+        }
+
+        if (scope != null) {
+            request.setScope(scope)
+        }
+
+        request.start(object : Callback<Credentials, AuthenticationException> {
+            override fun onSuccess(credentials: Credentials) {
+                Log.d("Auth0Plugin", "loginWithEmailAsync")
                 manager.saveCredentials(credentials)
                 deferred.complete(true);
             }
 
             override fun onFailure(error: AuthenticationException) {
-                Log.e("Auth0Plugin", "loginWithEmailAsync error ${error.getDescription()} email = $email")
+                Log.e("Auth0Plugin", "loginWithEmailAsync error ${error.getDescription()}")
                 deferred.completeExceptionally(error)
             }
         })
@@ -114,18 +150,18 @@ object Auth {
     }
 
     fun loginWithPhoneNumberAsync(
-        phoneNumber: String,
-        code: String,
-        audience: String?,
-        scope: String?
+            phoneNumber: String,
+            code: String,
+            audience: String?,
+            scope: String?
     ): Deferred<Boolean> {
         val deferred = CompletableDeferred<Boolean>();
 
-        Log.d("Auth0Plugin", "loginWithPhoneNumberAsync phoneNumber = $phoneNumber")
+        Log.d("Auth0Plugin", "loginWithPhoneNumberAsync phoneNumber")
 
         val request: AuthenticationRequest = authentication.loginWithPhoneNumber(phoneNumber, code, "sms")
 
-        if(audience != null) {
+        if (audience != null) {
             request.setAudience(audience)
         }
 
@@ -136,15 +172,15 @@ object Auth {
 
         request.start(object : Callback<Credentials, AuthenticationException> {
             override fun onSuccess(credentials: Credentials) {
-                Log.d("Auth0Plugin", "loginWithPhoneNumberAsync success phoneNumber = $phoneNumber")
+                Log.d("Auth0Plugin", "loginWithPhoneNumberAsync success")
                 manager.saveCredentials(credentials)
                 deferred.complete(true);
             }
 
             override fun onFailure(error: AuthenticationException) {
                 Log.e(
-                    "Auth0Plugin",
-                    "loginWithPhoneNumberAsync error ${error.getDescription()} phoneNumber = $phoneNumber"
+                        "Auth0Plugin",
+                        "loginWithPhoneNumberAsync error ${error.getDescription()}"
                 )
                 deferred.completeExceptionally(error)
             }

@@ -34,6 +34,32 @@ class Auth0Api extends Auth0ApiPlatformInterface {
   }
 
   @override
+  Future<bool> login(
+    String email,
+    String password,
+    String realmOrConnection,
+  ) async {
+    try {
+      final result = await methodChannel.invokeMethod<bool?>(
+        'login',
+        {
+          "email": email,
+          "password": password,
+          "realmOrConnection": realmOrConnection,
+          "audience": _data.audience,
+          "scope": _data.scope,
+        },
+      );
+
+      return result ?? false;
+    } on Object catch (e, s) {
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: s);
+      throw Auth0LoginException();
+    }
+  }
+
+  @override
   Future<bool> passwordLessWithEmail(String email) async {
     try {
       final result = await methodChannel.invokeMethod<bool?>(
