@@ -70,6 +70,9 @@ class Auth0Api extends Auth0ApiPlatformInterface {
 
       userInfo = UserInfo(
         email: result?['email'].toString(),
+        isEmailVerified: result?['isEmailVerified'] is bool?
+            ? (result?['isEmailVerified']) as bool?
+            : null,
       );
     } on Object catch (e, s) {
       debugPrint(e.toString());

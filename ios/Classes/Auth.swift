@@ -32,6 +32,7 @@ class Auth {
             .webAuth(clientId: clientId, domain: domain)
             .audience(audience)
             .scope(scope)
+            .useEphemeralSession()
             .start { result in
                 switch result {
                 case .success(let credentials):
@@ -234,7 +235,7 @@ class Auth {
     
     func getUserInfo(
         accessToken: String,
-        onSuccess: @escaping ((_ userInfo: Dictionary<String, String?>) -> Void),
+        onSuccess: @escaping ((_ userInfo: Dictionary<String, Any?>) -> Void),
         onError: @escaping ((_ error: FlutterError) -> Void)
     ) {
         authentication
@@ -243,7 +244,8 @@ class Auth {
                 switch result {
                 case .success(let profile):
                     onSuccess([
-                        "email": profile.email
+                        "email": profile.email,
+                        "isEmailVerified": profile.emailVerified
                     ])
                 case .failure(let error):
                     onError(FlutterError(

@@ -266,7 +266,7 @@ public class GrowthAuth0Plugin: NSObject, FlutterPlugin {
             Auth.shared.getUserInfo(
                 accessToken: accessToken,
                 onSuccess: {
-                    (userInfo: Dictionary<String, String?>) in result(userInfo)
+                    (userInfo: Dictionary<String, Any?>) in result(userInfo)
                 },
                 onError: {
                     (error: FlutterError) in result(error)
