@@ -10,9 +10,14 @@ class Auth0InitException extends Auth0Exception {
   Auth0InitException([String? message]) : super(message);
 }
 
-/// Исключение вхоаа
+/// Исключение входа
 class Auth0LoginException extends Auth0Exception {
   Auth0LoginException([String? message]) : super(message);
+}
+
+/// Исключение входа через universal login
+class Auth0LoginWithUniversalException extends Auth0Exception {
+  Auth0LoginWithUniversalException([String? message]) : super(message);
 }
 
 /// Исключение отправки почты для получения кода авторизации по email

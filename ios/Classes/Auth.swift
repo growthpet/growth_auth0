@@ -11,10 +11,42 @@ class Auth {
     
     private var authentication: Authentication!
     private var manager: CredentialsManager!
+    private var clientId: String!
+    private var domain: String!
     
     func initAuth(clientId: String, domain: String) {
         authentication = Auth0.authentication(clientId: clientId, domain: domain)
         manager = CredentialsManager(authentication: authentication)
+        self.clientId = clientId
+        self.domain = domain
+    }
+    
+    func loginWithUniversal(
+        audience: String,
+        scope: String,
+        onSuccess: @escaping ((_ isSuccess: Bool) -> Void),
+        onError: @escaping ((_ error: FlutterError) -> Void)
+    ) {
+        
+        Auth0
+            .webAuth(clientId: clientId, domain: domain)
+            .audience(audience)
+            .scope(scope)
+            .start { result in
+                switch result {
+                case .success(let credentials):
+                    self.manager.store(credentials: credentials)
+                    onSuccess(true)
+                case .failure(let error):
+                    onError(
+                        FlutterError(
+                            code: "auth0loginWithUniversal",
+                            message: error.debugDescription,
+                            details: ""
+                        )
+                    )
+                }
+            }
     }
     
     func login(
@@ -26,7 +58,7 @@ class Auth {
         onSuccess: @escaping ((_ isSuccess: Bool) -> Void),
         onError: @escaping ((_ error: FlutterError) -> Void)
     ) {
-
+        
         return authentication.login(
             usernameOrEmail: email,
             password: password,
@@ -198,6 +230,29 @@ class Auth {
                 break;
             }
         }
+    }
+    
+    func getUserInfo(
+        accessToken: String,
+        onSuccess: @escaping ((_ userInfo: Dictionary<String, String?>) -> Void),
+        onError: @escaping ((_ error: FlutterError) -> Void)
+    ) {
+        authentication
+            .userInfo(withAccessToken: accessToken)
+            .start { result in
+                switch result {
+                case .success(let profile):
+                    onSuccess([
+                        "email": profile.email
+                    ])
+                case .failure(let error):
+                    onError(FlutterError(
+                        code: "Auth0GetUserInfo",
+                        message: error.debugDescription,
+                        details: ""
+                    ))
+                }
+            }
     }
     
     func clearCredentials() -> Bool {

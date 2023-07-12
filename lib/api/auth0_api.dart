@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:growth_auth0/api/auth0_api_platform_interface.dart';
-import 'package:growth_auth0/data/auth0_initial_data.dart';
+import 'package:growth_auth0/data/export.dart';
 import 'package:growth_auth0/exceptions/auth0_init_exception.dart';
 
 /// An implementation of [GrowthAuth0Platform] that uses method channels.
@@ -31,6 +31,52 @@ class Auth0Api extends Auth0ApiPlatformInterface {
       debugPrintStack(stackTrace: s);
       throw Auth0InitException();
     }
+  }
+
+  @override
+  Future<bool> loginWithUniversal() async {
+    try {
+      final isSuccess = await methodChannel.invokeMethod<bool?>(
+        'loginWithUniversal',
+        {
+          "audience": _data.audience,
+          "scope": _data.scope,
+        },
+      );
+
+      return isSuccess ?? false;
+    } on PlatformException catch (e, s) {
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: s);
+      throw Auth0LoginWithUniversalException(e.message);
+    } on Object catch (e, s) {
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: s);
+      throw Auth0LoginWithUniversalException();
+    }
+  }
+
+  @override
+  Future<UserInfo> getUserInfo(String accessToken) async {
+    UserInfo? userInfo;
+
+    try {
+      final result = await methodChannel.invokeMethod<Map<Object?, Object?>?>(
+        'getUserInfo',
+        {
+          "accessToken": accessToken,
+        },
+      );
+
+      userInfo = UserInfo(
+        email: result?['email'].toString(),
+      );
+    } on Object catch (e, s) {
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: s);
+    }
+
+    return userInfo ?? UserInfo();
   }
 
   @override

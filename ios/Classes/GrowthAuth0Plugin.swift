@@ -10,57 +10,64 @@ public class GrowthAuth0Plugin: NSObject, FlutterPlugin {
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch(call.method) {
-            case "initAuth":
-                handleInit(call: call, result: result)
-                
+        case "initAuth":
+            handleInit(call: call, result: result)
+            
+        case "loginWithUniversal":
+            handleLoginWithUniversal(call: call, result: result)
+            break;
+            
         case  "login":
-                handleLogin(call: call, result: result)
-                break;
+            handleLogin(call: call, result: result)
+            break;
             
         case  "passwordLessWithEmail":
-                handlePasswordLessWithEmail(call: call, result: result)
-                break;
+            handlePasswordLessWithEmail(call: call, result: result)
+            break;
             
-            case "passwordLessWithSMS":
-                handlePasswordLessWithSMS(call: call, result: result)
-                
-            case "loginWithEmail":
-                handleLoginWithEmail(call: call, result: result)
-                break;
+        case "passwordLessWithSMS":
+            handlePasswordLessWithSMS(call: call, result: result)
             
-                break;
-            case "loginWithPhoneNumber":
-                handleLoginWithPhoneNumber(call: call, result: result)
-                break;
-                
-            case "checkIsLogged":
-                result(Auth.shared.checkIsLogged())
-                break;
-                
-            case "getAccessToken":
-                handleGetAccessToken(result: result)
-                break;
+        case "loginWithEmail":
+            handleLoginWithEmail(call: call, result: result)
+            break;
             
-            case "clearCredentials":
-                result(Auth.shared.clearCredentials())
-                break;
+        case "loginWithPhoneNumber":
+            handleLoginWithPhoneNumber(call: call, result: result)
+            break;
             
-            case "logout":
-                result(Auth.shared.logout())
-                break;
-            default:
-                result(getBaseError())
+        case "checkIsLogged":
+            result(Auth.shared.checkIsLogged())
+            break;
+            
+        case "getAccessToken":
+            handleGetAccessToken(result: result)
+            break;
+            
+        case "getUserInfo":
+            handleGetUserInfo(call: call, result: result)
+            break;
+            
+        case "clearCredentials":
+            result(Auth.shared.clearCredentials())
+            break;
+            
+        case "logout":
+            result(Auth.shared.logout())
+            break;
+        default:
+            result(getBaseError())
         }
-    
+        
         
     }
     
     private func handleInit(call: FlutterMethodCall, result: @escaping FlutterResult) {
-    
+        
         if let myArgs = call.arguments as? [String: Any],
            let authClientId =  myArgs["authClientId"] as? String,
            let authDomain =  myArgs["authDomain"] as? String {
-           
+            
             Auth.shared.initAuth(clientId: authClientId, domain: authDomain)
             debugPrint("Auth0Plugin initAuth complete")
             
@@ -70,6 +77,30 @@ public class GrowthAuth0Plugin: NSObject, FlutterPlugin {
             debugPrint("Auth0Plugin error")
             result(getBaseError())
         }
+    }
+    
+    
+    
+    private func handleLoginWithUniversal(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if let myArgs = call.arguments as? [String: Any],
+           let audience =  myArgs["audience"] as? String,
+           let scope =  myArgs["scope"] as? String {
+            
+            
+            Auth.shared.loginWithUniversal(
+                audience: audience,
+                scope: scope,
+                onSuccess: {
+                    (isSuccess: Bool) in result(isSuccess)
+                },
+                onError: {
+                    (error: FlutterError) in result(error)
+                }
+            )
+        } else {
+            result(getBaseError())
+        }
+        
     }
     
     private func handlePasswordLessWithEmail(call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -228,8 +259,26 @@ public class GrowthAuth0Plugin: NSObject, FlutterPlugin {
         )
     }
     
+    private func handleGetUserInfo(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if let myArgs = call.arguments as? [String: Any],
+           let accessToken =  myArgs["accessToken"] as? String {
+            
+            Auth.shared.getUserInfo(
+                accessToken: accessToken,
+                onSuccess: {
+                    (userInfo: Dictionary<String, String?>) in result(userInfo)
+                },
+                onError: {
+                    (error: FlutterError) in result(error)
+                }
+            )
+        } else {
+            result(getBaseError())
+        }
+    }
+    
     private func getBaseError() -> FlutterError {
-       return FlutterError(code: "Auth0Plugin error", message: "", details: "")
+        return FlutterError(code: "Auth0Plugin error", message: "", details: "")
     }
     
     

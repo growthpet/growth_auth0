@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:growth_auth0/api/auth0_api_platform_interface.dart';
 import 'package:growth_auth0/data/auth0_initial_data.dart';
+import 'package:growth_auth0/data/user_info.dart';
 import 'package:growth_auth0/exceptions/auth0_init_exception.dart';
 import 'package:growth_web/growth_web.dart';
 
@@ -73,6 +74,12 @@ class Auth0Api extends Auth0ApiPlatformInterface {
     String realmOrConnection,
   ) {
     return Future.value(false);
+  }
+
+  @override
+  Future<bool> loginWithUniversal() async {
+    /// TODO реализовать
+    return false;
   }
 
   @override
@@ -192,6 +199,12 @@ class Auth0Api extends Auth0ApiPlatformInterface {
       debugPrintStack(stackTrace: s);
       throw Auth0GetAccessTokenException();
     }
+  }
+
+  @override
+  Future<UserInfo> getUserInfo(String accessToken) {
+    /// TODO реализовать
+    return Future.value(UserInfo());
   }
 
   @override

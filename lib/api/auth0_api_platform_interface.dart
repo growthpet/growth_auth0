@@ -1,4 +1,5 @@
 import 'package:growth_auth0/data/auth0_initial_data.dart';
+import 'package:growth_auth0/data/user_info.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 abstract class Auth0ApiPlatformInterface extends PlatformInterface {
@@ -26,6 +27,8 @@ abstract class Auth0ApiPlatformInterface extends PlatformInterface {
 
   Future<void> initAuth(Auth0InitialData data);
 
+  Future<bool> loginWithUniversal();
+
   Future<bool> login(
     String email,
     String password,
@@ -49,6 +52,8 @@ abstract class Auth0ApiPlatformInterface extends PlatformInterface {
   Future<bool> checkIsLogged();
 
   Future<String> getAccessToken();
+
+  Future<UserInfo> getUserInfo(String accessToken);
 
   Future<void> clearIOSAuhCredentials();
 
