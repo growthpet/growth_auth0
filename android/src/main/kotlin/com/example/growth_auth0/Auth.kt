@@ -8,9 +8,11 @@ import com.auth0.android.authentication.storage.CredentialsManagerException
 import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.authentication.storage.SharedPreferencesStorage
 import com.auth0.android.callback.Callback
+import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.request.AuthenticationRequest
 import com.auth0.android.request.DefaultClient
 import com.auth0.android.result.Credentials
+import com.auth0.android.result.UserProfile
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 
@@ -33,6 +35,33 @@ object Auth {
         )
 
         auth0.networkingClient = netClient
+    }
+
+    fun loginWithUniversalAsync(context: Context, audience: String, scope: String): Deferred<Boolean> {
+        val deferred = CompletableDeferred<Boolean>()
+
+        Log.d("Auth0Plugin", "loginWithUniversalAsync")
+
+        WebAuthProvider.login(auth0)
+//                .withScheme("https")
+                .withAudience(audience)
+                .withScope(scope)
+                .start(context, object : Callback<Credentials, AuthenticationException> {
+                    override fun onSuccess(credentials: Credentials) {
+                        Log.d("Auth0Plugin", "loginAsync success")
+
+                        manager.saveCredentials(credentials)
+
+                        deferred.complete(true);
+                    }
+
+                    override fun onFailure(error: AuthenticationException) {
+                        Log.e("Auth0Plugin", "loginAsync error = ${error.message}")
+                        deferred.completeExceptionally(error)
+                    }
+                })
+
+        return deferred
     }
 
     fun loginAsync(email: String, password: String, realmOrConnection: String, audience: String?,
@@ -196,7 +225,7 @@ object Auth {
     }
 
     fun getAccessTokenAsync(): Deferred<String> {
-        val deferred = CompletableDeferred<String>();
+        val deferred = CompletableDeferred<String>()
 
         Log.d("Auth0Plugin", "getAccessToken")
 
@@ -213,6 +242,29 @@ object Auth {
                 deferred.completeExceptionally(error)
             }
         })
+
+        return deferred
+    }
+
+    fun getUserInfoAsync(accessToken: String): Deferred<HashMap<Any, Any?>> {
+
+        val deferred = CompletableDeferred<HashMap<Any, Any?>>();
+
+        authentication.userInfo(accessToken)
+                .start(object : Callback<UserProfile, AuthenticationException> {
+                    override fun onSuccess(result: UserProfile) {
+                        deferred.complete(hashMapOf(
+                                "email" to result.email,
+                                "isEmailVerified" to result.isEmailVerified
+                        ))
+                    }
+
+                    override fun onFailure(error: AuthenticationException) {
+                        Log.d("Auth0Plugin", "getUserInfo error")
+
+                        deferred.completeExceptionally(error)
+                    }
+                })
 
         return deferred
     }
