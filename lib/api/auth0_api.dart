@@ -41,6 +41,7 @@ class Auth0Api extends Auth0ApiPlatformInterface {
         {
           "audience": _data.audience,
           "scope": _data.scope,
+          "scheme": _data.scheme,
         },
       );
 

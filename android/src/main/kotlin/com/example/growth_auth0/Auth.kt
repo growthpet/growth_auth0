@@ -37,14 +37,18 @@ object Auth {
         auth0.networkingClient = netClient
     }
 
-    fun loginWithUniversalAsync(context: Context, audience: String, scope: String): Deferred<Boolean> {
+    fun loginWithUniversalAsync(context: Context, audience: String, scope: String, scheme: String): Deferred<Boolean> {
         val deferred = CompletableDeferred<Boolean>()
 
         Log.d("Auth0Plugin", "loginWithUniversalAsync")
 
-        WebAuthProvider.login(auth0)
-//                .withScheme("https")
-                .withAudience(audience)
+        val web = WebAuthProvider.login(auth0)
+
+        if (scheme.isNotEmpty()) {
+            web.withScheme(scheme)
+        }
+
+        web.withAudience(audience)
                 .withScope(scope)
                 .start(context, object : Callback<Credentials, AuthenticationException> {
                     override fun onSuccess(credentials: Credentials) {
