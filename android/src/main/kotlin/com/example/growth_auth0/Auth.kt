@@ -296,8 +296,7 @@ object Auth {
             }
 
             override fun onFailure(error: AuthenticationException) {
-                logout()
-                deferred.complete(true);
+                deferred.completeExceptionally(error);
             }
         })
 

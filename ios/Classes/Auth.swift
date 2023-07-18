@@ -267,4 +267,30 @@ class Auth {
     func logout() -> Bool {
         return clearCredentials();
     }
+
+    
+    func logoutWithUniversal(
+        audience: String,
+        scope: String,
+        onSuccess: @escaping ((_ isSuccess: Bool) -> Void),
+        onError: @escaping ((_ error: FlutterError) -> Void)
+    ) {
+        Auth0
+            .webAuth(clientId: clientId, domain: domain)
+            .audience(audience)
+            .scope(scope)
+            .useEphemeralSession()
+            .clearSession { result in
+                switch result {
+                case .success():
+                    onSuccess(self.logout())
+                case .failure(let error):
+                    onError(FlutterError(
+                        code: "Auth0LogoutWithUniversal",
+                        message: error.debugDescription,
+                        details: ""
+                    ))
+                }
+            }
+    }
 }

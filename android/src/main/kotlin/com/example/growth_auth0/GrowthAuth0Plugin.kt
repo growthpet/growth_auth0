@@ -94,7 +94,6 @@ class GrowthAuth0Plugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
         } else if (call.method == "logoutWithUniversal") {
             if (activity == null) {
-                result.error("ACTIVITY_NOT_AVAILABLE", "Activity is not available.", null)
                 handleLogout(result)
                 return
             }

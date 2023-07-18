@@ -55,6 +55,11 @@ public class GrowthAuth0Plugin: NSObject, FlutterPlugin {
         case "logout":
             result(Auth.shared.logout())
             break;
+            
+        case "logoutWithUniversal":
+            handleLogoutWithUniversal(call: call, result: result)
+            break;
+            
         default:
             result(getBaseError())
         }
@@ -267,6 +272,26 @@ public class GrowthAuth0Plugin: NSObject, FlutterPlugin {
                 accessToken: accessToken,
                 onSuccess: {
                     (userInfo: Dictionary<String, Any?>) in result(userInfo)
+                },
+                onError: {
+                    (error: FlutterError) in result(error)
+                }
+            )
+        } else {
+            result(getBaseError())
+        }
+    }
+    
+    private func handleLogoutWithUniversal(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if let myArgs = call.arguments as? [String: Any],
+           let audience =  myArgs["audience"] as? String,
+           let scope =  myArgs["scope"] as? String {
+
+            Auth.shared.logoutWithUniversal(
+                audience: audience,
+                scope: scope,
+                onSuccess: {
+                    (isSuccess: Bool) in result(isSuccess)
                 },
                 onError: {
                     (error: FlutterError) in result(error)
