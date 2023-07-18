@@ -257,4 +257,21 @@ class Auth0Api extends Auth0ApiPlatformInterface {
   Future<void> logout() {
     return methodChannel.invokeMethod<void>('logout');
   }
+
+  @override
+  Future<void> logoutWithUniversal() async {
+    try {
+      return await methodChannel.invokeMethod<void>('logoutWithUniversal', {
+        "scheme": _data.scheme,
+      });
+    } on PlatformException catch (e, s) {
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: s);
+      throw Auth0LogoutWithUniversalException(e.message);
+    } on Object catch (e, s) {
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: s);
+      throw Auth0LogoutWithUniversalException();
+    }
+  }
 }

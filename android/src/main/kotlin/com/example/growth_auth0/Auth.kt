@@ -1,6 +1,7 @@
 import android.content.Context
 import android.util.Log
 import com.auth0.android.Auth0
+import com.auth0.android.Auth0Exception
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.authentication.PasswordlessType
@@ -275,5 +276,31 @@ object Auth {
 
     fun logout() {
         manager.clearCredentials()
+    }
+
+    fun logoutWithUniversalAsync(context: Context, scheme: String): Deferred<Boolean> {
+        val deferred = CompletableDeferred<Boolean>()
+
+        Log.d("Auth0Plugin", "logoutWithUniversalAsync")
+
+        val web = WebAuthProvider.logout(auth0)
+
+        if (scheme.isNotEmpty()) {
+            web.withScheme(scheme)
+        }
+
+        web.start(context, object : Callback<Void?, AuthenticationException> {
+            override fun onSuccess(payload: Void?) {
+                logout()
+                deferred.complete(true);
+            }
+
+            override fun onFailure(error: AuthenticationException) {
+                logout()
+                deferred.complete(true);
+            }
+        })
+
+        return deferred
     }
 }

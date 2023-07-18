@@ -92,6 +92,14 @@ class GrowthAuth0Plugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         } else if (call.method == "logout") {
             handleLogout(result)
 
+        } else if (call.method == "logoutWithUniversal") {
+            if (activity == null) {
+                result.error("ACTIVITY_NOT_AVAILABLE", "Activity is not available.", null)
+                handleLogout(result)
+                return
+            }
+
+            GlobalScope.launch { handleLogoutWithUniversal(call, result, activity!!) }
         } else {
             result.notImplemented()
         }
@@ -212,6 +220,16 @@ class GrowthAuth0Plugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             result.success(true)
         } catch (e: Throwable) {
             result.error("Auth0Plugin Error logout", e.message, null)
+        }
+    }
+
+    private suspend fun handleLogoutWithUniversal(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result, @NonNull context: Context) {
+        val scheme = call.argument("scheme") ?: ""
+
+        try {
+            result.success(Auth.logoutWithUniversalAsync(context, scheme).await())
+        } catch (e: Throwable) {
+            result.error("Auth0Plugin Error logoutWithUniversal", e.message, null)
         }
     }
 }
