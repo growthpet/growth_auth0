@@ -38,7 +38,7 @@ object Auth {
         auth0.networkingClient = netClient
     }
 
-    fun loginWithUniversalAsync(context: Context, audience: String, scope: String, scheme: String): Deferred<Boolean> {
+    fun loginWithUniversalAsync(context: Context, audience: String, scope: String, scheme: String, redirectUri: String): Deferred<Boolean> {
         val deferred = CompletableDeferred<Boolean>()
 
         Log.d("Auth0Plugin", "loginWithUniversalAsync")
@@ -49,7 +49,12 @@ object Auth {
             web.withScheme(scheme)
         }
 
+        if (redirectUri.isNotEmpty()) {
+            web.withRedirectUri(redirectUri)
+        }
+
         web.withAudience(audience)
+                .withTrustedWebActivity()
                 .withScope(scope)
                 .start(context, object : Callback<Credentials, AuthenticationException> {
                     override fun onSuccess(credentials: Credentials) {
@@ -278,7 +283,7 @@ object Auth {
         manager.clearCredentials()
     }
 
-    fun logoutWithUniversalAsync(context: Context, scheme: String): Deferred<Boolean> {
+    fun logoutWithUniversalAsync(context: Context, scheme: String, redirectUri: String): Deferred<Boolean> {
         val deferred = CompletableDeferred<Boolean>()
 
         Log.d("Auth0Plugin", "logoutWithUniversalAsync")
@@ -289,7 +294,11 @@ object Auth {
             web.withScheme(scheme)
         }
 
-        web.start(context, object : Callback<Void?, AuthenticationException> {
+        if (redirectUri.isNotEmpty()) {
+            web.withReturnToUrl(redirectUri)
+        }
+
+        web.withTrustedWebActivity().start(context, object : Callback<Void?, AuthenticationException> {
             override fun onSuccess(payload: Void?) {
                 logout()
                 deferred.complete(true);

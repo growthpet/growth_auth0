@@ -113,9 +113,10 @@ class GrowthAuth0Plugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         val audience = call.argument("audience") ?: ""
         val scope = call.argument("scope") ?: ""
         val scheme = call.argument("scheme") ?: ""
+        val redirectUri = call.argument("redirectUri") ?: ""
 
         try {
-            result.success(Auth.loginWithUniversalAsync(context, audience, scope, scheme).await())
+            result.success(Auth.loginWithUniversalAsync(context, audience, scope, scheme, redirectUri).await())
         } catch (e: AuthenticationException) {
             result.error("Auth0Plugin AuthenticationException handle loginWith universal async", e.getDescription(), null)
         } catch (e: Throwable) {
@@ -224,9 +225,10 @@ class GrowthAuth0Plugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private suspend fun handleLogoutWithUniversal(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result, @NonNull context: Context) {
         val scheme = call.argument("scheme") ?: ""
+        val redirectUri = call.argument("redirectUri") ?: ""
 
         try {
-            result.success(Auth.logoutWithUniversalAsync(context, scheme).await())
+            result.success(Auth.logoutWithUniversalAsync(context, scheme, redirectUri).await())
         } catch (e: Throwable) {
             result.error("Auth0Plugin Error logoutWithUniversal", e.message, null)
         }

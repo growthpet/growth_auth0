@@ -42,6 +42,7 @@ class Auth0Api extends Auth0ApiPlatformInterface {
           "audience": _data.audience,
           "scope": _data.scope,
           "scheme": _data.scheme,
+          "redirectUri": _data.redirectUri,
         },
       );
 
@@ -265,6 +266,7 @@ class Auth0Api extends Auth0ApiPlatformInterface {
         "audience": _data.audience,
         "scope": _data.scope,
         "scheme": _data.scheme,
+        "redirectUri": _data.redirectUri,
       });
     } on PlatformException catch (e, s) {
       debugPrint(e.toString());
