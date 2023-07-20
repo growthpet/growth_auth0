@@ -12,7 +12,7 @@ class Auth0Api extends Auth0ApiPlatformInterface {
   final _methodChannel = WebMethodChannel();
 
   late final _client = Auth0Client(_methodChannel);
-  late final _spa = Auth0Spa(_methodChannel);
+  late final _spa = Auth0Spa();
 
   AuthWebType? _type;
 
@@ -37,7 +37,6 @@ class Auth0Api extends Auth0ApiPlatformInterface {
         break;
       case AuthWebType.spa:
         _spa.initAuth(data);
-      default:
     }
 
     _type = type;
@@ -46,7 +45,7 @@ class Auth0Api extends Auth0ApiPlatformInterface {
   @override
   Future<bool> loginWithUniversal() async {
     return switch (_type) {
-      AuthWebType.spa => _spa.loginWithUniversal(),
+      AuthWebType.spa => _spa.login(),
       _ => Future.value(false),
     };
   }
@@ -127,7 +126,7 @@ class Auth0Api extends Auth0ApiPlatformInterface {
   @override
   Future<void> logoutWithUniversal() async {
     return switch (_type) {
-      AuthWebType.spa => _spa.logoutWithUniversal(),
+      AuthWebType.spa => _spa.logout(),
       _ => Future.value(null),
     };
   }
