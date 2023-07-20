@@ -8,14 +8,25 @@ import 'package:growth_auth0/exceptions/auth0_init_exception.dart';
 
 /// An implementation of [GrowthAuth0Platform] that uses method channels.
 class Auth0Api extends Auth0ApiPlatformInterface {
+  static final instance = Auth0Api._();
+
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   final methodChannel = const MethodChannel('growth_auth0');
 
   late final Auth0InitialData _data;
 
+  Auth0Api._();
+
+  factory Auth0Api() {
+    return instance;
+  }
+
   @override
-  Future<void> initAuth(Auth0InitialData data) async {
+  Future<void> initAuth(
+    Auth0InitialData data, {
+    AuthWebType? type,
+  }) async {
     _data = data;
 
     try {
