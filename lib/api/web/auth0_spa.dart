@@ -35,9 +35,10 @@ class Auth0Spa {
 
   Future<bool> login() async {
     try {
-      final r = await _auth?.loginWithPopup(
+      await _auth?.loginWithRedirect(
         audience: _data?.audience,
         scopes: _data?.scopes,
+        redirectUrl: _data?.redirectUri,
       );
       return true;
     } on Object catch (e, s) {
