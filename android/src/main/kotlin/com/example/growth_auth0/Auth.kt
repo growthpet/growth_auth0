@@ -1,6 +1,7 @@
 import android.content.Context
 import android.util.Log
 import com.auth0.android.Auth0
+import com.auth0.android.Auth0Exception
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.authentication.PasswordlessType
@@ -37,14 +38,23 @@ object Auth {
         auth0.networkingClient = netClient
     }
 
-    fun loginWithUniversalAsync(context: Context, audience: String, scope: String): Deferred<Boolean> {
+    fun loginWithUniversalAsync(context: Context, audience: String, scope: String, scheme: String, redirectUri: String): Deferred<Boolean> {
         val deferred = CompletableDeferred<Boolean>()
 
         Log.d("Auth0Plugin", "loginWithUniversalAsync")
 
-        WebAuthProvider.login(auth0)
-//                .withScheme("https")
-                .withAudience(audience)
+        val web = WebAuthProvider.login(auth0)
+
+        if (scheme.isNotEmpty()) {
+            web.withScheme(scheme)
+        }
+
+        if (redirectUri.isNotEmpty()) {
+            web.withRedirectUri(redirectUri)
+        }
+
+        web.withAudience(audience)
+                .withTrustedWebActivity()
                 .withScope(scope)
                 .start(context, object : Callback<Credentials, AuthenticationException> {
                     override fun onSuccess(credentials: Credentials) {
@@ -271,5 +281,34 @@ object Auth {
 
     fun logout() {
         manager.clearCredentials()
+    }
+
+    fun logoutWithUniversalAsync(context: Context, scheme: String, redirectUri: String): Deferred<Boolean> {
+        val deferred = CompletableDeferred<Boolean>()
+
+        Log.d("Auth0Plugin", "logoutWithUniversalAsync")
+
+        val web = WebAuthProvider.logout(auth0)
+
+        if (scheme.isNotEmpty()) {
+            web.withScheme(scheme)
+        }
+
+        if (redirectUri.isNotEmpty()) {
+            web.withReturnToUrl(redirectUri)
+        }
+
+        web.withTrustedWebActivity().start(context, object : Callback<Void?, AuthenticationException> {
+            override fun onSuccess(payload: Void?) {
+                logout()
+                deferred.complete(true);
+            }
+
+            override fun onFailure(error: AuthenticationException) {
+                deferred.completeExceptionally(error);
+            }
+        })
+
+        return deferred
     }
 }

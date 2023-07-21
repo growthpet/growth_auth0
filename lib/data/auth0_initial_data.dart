@@ -5,6 +5,7 @@ class Auth0InitialData {
   final String audience;
   final Set<String> scopes;
   final String? scheme;
+  final String? redirectUri;
 
   String get scope => scopes.join(' ');
 
@@ -14,6 +15,7 @@ class Auth0InitialData {
     required this.audience,
     required this.scopes,
     this.scheme,
+    this.redirectUri,
   });
 
   @override

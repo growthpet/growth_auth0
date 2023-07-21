@@ -59,3 +59,8 @@ class Auth0LogoutException extends Auth0Exception {
 class Auth0ClearCredentialsException extends Auth0Exception {
   Auth0ClearCredentialsException([String? message]) : super(message);
 }
+
+/// Исключение universal logout
+class Auth0LogoutWithUniversalException extends Auth0Exception {
+  Auth0LogoutWithUniversalException([String? message]) : super(message);
+}

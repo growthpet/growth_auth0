@@ -2,6 +2,11 @@ import 'package:growth_auth0/data/auth0_initial_data.dart';
 import 'package:growth_auth0/data/user_info.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+enum AuthWebType {
+  client,
+  spa,
+}
+
 abstract class Auth0ApiPlatformInterface extends PlatformInterface {
   /// Constructs a GrowthAuth0Platform.
   Auth0ApiPlatformInterface() : super(token: _token);
@@ -25,7 +30,10 @@ abstract class Auth0ApiPlatformInterface extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<void> initAuth(Auth0InitialData data);
+  Future<void> initAuth(
+    Auth0InitialData data, {
+    AuthWebType type,
+  });
 
   Future<bool> loginWithUniversal();
 
@@ -33,11 +41,15 @@ abstract class Auth0ApiPlatformInterface extends PlatformInterface {
     String email,
     String password,
     String realmOrConnection,
-  );
+  ) {
+    return Future.value(false);
+  }
 
   Future<bool> passwordLessWithEmail(String email);
 
-  Future<bool> passwordLessWithSMS(String phoneNumber);
+  Future<bool> passwordLessWithSMS(String phoneNumber) async {
+    return false;
+  }
 
   Future<bool> loginWithEmail(
     String email,
@@ -55,9 +67,13 @@ abstract class Auth0ApiPlatformInterface extends PlatformInterface {
 
   Future<UserInfo> getUserInfo(String accessToken);
 
-  Future<void> clearIOSAuhCredentials();
+  Future<void> clearIOSAuhCredentials() {
+    return Future.value(null);
+  }
 
   Future<void> clearWebTokensData();
 
   Future<void> logout();
+
+  Future<void> logoutWithUniversal();
 }

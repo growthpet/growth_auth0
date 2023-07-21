@@ -17,6 +17,7 @@ dependencies:
   plugin_platform_interface: ^2.0.2
   js: ^0.6.5
   flutter_secure_storage: ^8.0.0
+  auth0_flutter: ^1.2.1
   
   growth_web:
     git:
