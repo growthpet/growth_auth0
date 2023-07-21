@@ -27,6 +27,7 @@ class Auth0InitialData {
         ' audience = $audience\n'
         ' scopes = $scopes\n'
         ' scheme = $scheme\n'
+        ' redirectUri = $redirectUri\n'
         ')';
   }
 }
