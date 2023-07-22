@@ -25,6 +25,7 @@ class Auth0Spa {
         audience: data.audience,
         scopes: data.scopes,
         useRefreshTokens: true,
+        cacheLocation: CacheLocation.localStorage,
       );
     } on Object catch (e, s) {
       debugPrint(e.toString());
@@ -82,7 +83,10 @@ class Auth0Spa {
 
   Future<void> logout() async {
     try {
-      await _auth?.logout();
+      await _auth?.logout(
+        federated: true,
+        returnToUrl: _data?.redirectUri,
+      );
     } on Object catch (e, s) {
       debugPrint(e.toString());
       debugPrintStack(stackTrace: s);
