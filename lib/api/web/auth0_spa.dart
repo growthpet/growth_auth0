@@ -85,6 +85,7 @@ class Auth0Spa {
     try {
       await _auth?.logout(
         returnToUrl: _data?.redirectUri,
+        federated: false,
       );
     } on Object catch (e, s) {
       debugPrint(e.toString());
