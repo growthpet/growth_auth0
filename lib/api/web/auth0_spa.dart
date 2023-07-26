@@ -84,7 +84,6 @@ class Auth0Spa {
   Future<void> logout() async {
     try {
       await _auth?.logout(
-        federated: true,
         returnToUrl: _data?.redirectUri,
       );
     } on Object catch (e, s) {
