@@ -40,6 +40,9 @@ class Auth0Spa {
         audience: _data?.audience,
         scopes: _data?.scopes,
         redirectUrl: _data?.redirectUri,
+        parameters: {
+          "prompt": 'select_account',
+        },
       );
       return true;
     } on Object catch (e, s) {
